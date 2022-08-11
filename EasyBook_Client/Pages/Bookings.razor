@@ -1,0 +1,160 @@
+@page "/Bookings"
+@using Model
+@inject IClientMethods _userService
+<h3>Bookings</h3>
+
+<p>
+    Filter by Departure Airport: <input type="text" @oninput="@((arg) => FilterByDepAirport(arg))" style="width:50px"/>
+</p>
+
+@if (upcomingBookings == null && pastBookings==null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else if (!upcomingBookings.Any() && !pastBookings.Any())
+{
+    <p>
+        <em>No Bookings exist. Please add some.</em>
+    </p>
+}
+else
+{
+    <h2>All upcoming bookings</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Flight Number</th>
+            <th>Departure airport</th>
+            <th>Destination airport</th>
+            <th>Luggage</th>
+            <th>Final price</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Passport ID</th>
+            <th>Status</th>
+            <th>Remove</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in upcomingBookings)
+        {
+            <tr>
+                <td>@item.flight.flightNO</td>
+                <td>@item.flight.departureAirport.nameAirport</td>
+                <td>@item.flight.destinationAirport.nameAirport</td>
+                <td>@item.luggage</td>
+                <td>@item.flight.price+@item.flight.priceForLuggage*@item.luggage</td>
+                <td>@item.firstName</td>
+                <td>@item.lastName</td>
+                <td>@item.passportId</td>
+                <td>@item.status</td>
+                <td>
+                    <button @onclick="@(() => RemoveBooking(item.idBooking))">
+                        <i class="oi oi-trash" style="color:red"/>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    
+    <h2>All past bookings</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Flight Number</th>
+            <th>Departure airport</th>
+            <th>Destination airport</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Luggage</th>
+            <th>Final price</th>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Passport ID</th>
+            <th>Status</th>
+            <th>Remove</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in pastBookings)
+        {
+            <tr>
+                <td>@item.flight.flightNO</td>
+                <td>@item.flight.departureAirport.nameAirport</td>
+                <td>@item.flight.destinationAirport.nameAirport</td>
+                <td>@item.flight.dateTime.Date.ToShortDateString()</td>
+                <td>@item.flight.dateTime.ToShortTimeString()</td>
+                <td>@item.luggage</td>
+                <td>@item.finalPrice()</td>
+                <td>@item.firstName</td>
+                <td>@item.lastName</td>
+                <td>@item.passportId</td>
+                <td>@item.status</td>
+                <td>
+                    <button @onclick="@(() => RemoveBooking(item.idBooking))">
+                        <i class="oi oi-trash" style="color:red"/>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+@code {
+    private IList<Booking> pastBookings,upcomingBookings;
+    private IList<Booking> allBookings;
+
+    private string? filterByDepAirport;
+
+    private void FilterByDepAirport(ChangeEventArgs changeEventArgs)
+    {
+        filterByDepAirport = null;
+        try
+        {
+            filterByDepAirport = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+        }
+        ExecuteFilter();
+    }
+
+
+
+    private void ExecuteFilter()
+    {
+        upcomingBookings = upcomingBookings.Where(t =>
+            (filterByDepAirport != null && t.flight.departureAirport.Equals(filterByDepAirport) || filterByDepAirport == null)).ToList();
+        pastBookings = pastBookings.Where(t =>
+            (filterByDepAirport != null && t.flight.departureAirport.Equals(filterByDepAirport) || filterByDepAirport == null)).ToList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        allBookings = _userService.getBookings(_userService.getCurrentUser().email);
+            Console.WriteLine(allBookings.First().lastName);
+            pastBookings = allBookings.Where(booking => booking.flight.dateTime.CompareTo(new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day))>0).ToList();
+            upcomingBookings = allBookings.Where(booking => booking.flight.dateTime.CompareTo(new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)) < 1).ToList();
+        
+    }
+
+    private void RemoveBooking(int idBooking)
+    {
+        Booking bookingToRemove = allBookings.First(t => t.idBooking == idBooking);
+        try
+        {
+            _userService.removeBooking(idBooking);
+            pastBookings.Remove(bookingToRemove);
+            upcomingBookings.Remove(bookingToRemove);
+        }
+        catch (Exception e)
+        {
+    // update some error label here, or show popup..
+        }
+    }
+
+
+}

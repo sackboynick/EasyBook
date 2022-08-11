@@ -1,0 +1,56 @@
+@page "/login"
+@namespace BlazorClient.LoginComponent
+@using EasyBook_Client.Data
+
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject NavigationManager _navigationManager
+
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" placeholder="username" @bind-value="_username"/>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" placeholder="password" @bind-value="_password"/>
+        </div>
+        <div style="color:red">@_errorMessage</div>
+        <a href="" @onclick="PerformLogin">Login</a>
+    </NotAuthorized>
+    <Authorized>
+        <a href="" @onclick="PerformLogout">Log out</a>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private string _username;
+    private string _password;
+    private string _errorMessage;
+    
+    public async Task PerformLogin() {
+        _errorMessage = "";
+        try
+        {
+            ((CustomAuthenticationStateProvider) _authenticationStateProvider).ValidateLogin(_username, _password);
+            _username = "";
+            _password = "";
+            _navigationManager.NavigateTo("/");
+        } catch (Exception e) {
+            _errorMessage = e.Message;
+        }
+    }
+    public async Task PerformLogout() {
+        _errorMessage = "";
+        _username = "";
+        _password = "";
+        try {
+            ((CustomAuthenticationStateProvider) _authenticationStateProvider).Logout();
+            _navigationManager.NavigateTo("/");
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+}

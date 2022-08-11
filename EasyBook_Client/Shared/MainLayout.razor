@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+<PageTitle>EasyBook_Client</PageTitle>
+
+<div class="page">
+        <AuthorizeView Policy="RequireLogIn">
+            <div class="sidebar">
+                <NavMenu/>
+            </div>
+        </AuthorizeView>
+    <div class="main">
+        <div class="top-row px-4 h-auto m-10">
+            <Login/>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>

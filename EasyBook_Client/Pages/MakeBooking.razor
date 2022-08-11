@@ -1,0 +1,58 @@
+@inject NavigationManager _navigationManager;
+@inject IClientMethods _userService
+@page "/MakeBooking"
+@using Model
+<h3>MakeBooking for flight from @_userService.getSelectedFlight().departureAirport.nameAirport to @_userService.getSelectedFlight().destinationAirport.nameAirport</h3>
+
+<div class="card">
+    <h4 class="card-header">Make booking</h4>
+    <div class="card-body">
+        <EditForm Model="@booking" OnValidSubmit="OnValidBook">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Luggage</label>
+                <input type="number" @bind="booking.luggage" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>First name</label>
+                <InputText @bind-Value="booking.firstName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Last name</label>
+                <InputText @bind-Value="booking.lastName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Passport ID</label>
+                <InputText @bind-Value="booking.passportId" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <h4>Please write "Confirmed"</h4>
+            <InputText @bind-Value="booking.status" class="form-control"> </InputText>
+            </div>
+
+            <p class="actions">
+                <button class="btn btn-outline-dark" type="submit">Book flight</button>
+            </p>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    
+    private Booking booking;
+
+    protected override async Task OnInitializedAsync()
+    {
+        booking = new Booking();
+        booking.user = _userService.getCurrentUser();
+        booking.flight = _userService.getSelectedFlight();
+    }
+
+    private void OnValidBook()
+    {
+        _userService.makeBooking(booking);
+        _navigationManager.NavigateTo("Bookings");
+    }
+
+}

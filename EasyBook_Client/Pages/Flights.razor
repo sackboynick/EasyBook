@@ -1,0 +1,166 @@
+@page "/Flights"
+@using Model
+@inject IClientMethods _userService
+@inject NavigationManager _navigationManager
+<h3>Flights</h3>
+
+<p>
+    Filter by Departure Airport: <input type="text" @oninput="@((arg) => FilterByDepAirport(arg))" style="width:50px"/>
+</p>
+
+<p>
+    Filter by Departure Country: <input type="text" @oninput="@((arg) => FilterByDepCountry(arg))" style="width:50px"/>
+</p>
+
+<p>
+    Filter by Destination Airport: <input type="text" @oninput="@((arg) => FilterByDesAirport(arg))" style="width:50px"/>
+</p>
+
+<p>
+    Filter by Date: <input type="text" @oninput="@((arg) => FilterByDate(arg))" style="width:50px"/>
+</p>
+
+@if (flightsToShow == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else if (!flightsToShow.Any() )
+{
+    <p>
+        <em>No Flights exist.</em>
+    </p>
+}
+else
+{
+    <h2>All flights available</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Flight Number</th>
+            <th>Departure airport</th>
+            <th>Departure country</th>
+            <th>Destination airport</th>
+            <th>Destination country</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Length</th>
+            <th>Total seats</th>
+            <th>Total booked seats</th>
+            <th>Price</th>
+            <th>Price for luggage</th>
+            <th>Status</th>
+            <th>Book</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in flightsToShow)
+        {
+            <tr>
+                <td>@item.flightNO</td>
+                <td>@item.departureAirport.nameAirport</td>
+                <td>@item.departureCountry</td>
+                <td>@item.destinationAirport.nameAirport</td>
+                <td>@item.destinationCountry</td>
+                <td>@item.dateTime.ToShortDateString()</td>
+                <td>@item.dateTime.ToShortTimeString()</td>
+                <td>@item.length</td>
+                <td>@item.totalSeats</td>
+                <td>@item.totalBookedSeats</td>
+                <td>@item.price</td>
+                <td>@item.priceForLuggage</td>
+                <td>@item.status</td>
+                <td>
+                    <button @onclick="@(() => MakeBooking(item))">
+                        <i class="oi oi-confirm" style="color:red"/>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    private IList<Flight> flightsToShow;
+
+    private string? filterByDepAirport,filterByDepCountry,filterByDesAirport,filterByDate;
+
+    private void FilterByDepAirport(ChangeEventArgs changeEventArgs)
+    {
+        filterByDepAirport = null;
+        try
+        {
+            filterByDepAirport = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+        }
+        ExecuteFilter();
+    }
+    private void FilterByDesAirport(ChangeEventArgs changeEventArgs)
+    {
+        filterByDepAirport = null;
+        try
+        {
+            filterByDesAirport = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+        }
+        ExecuteFilter();
+    }
+    private void FilterByDepCountry(ChangeEventArgs changeEventArgs)
+    {
+        filterByDepAirport = null;
+        try
+        {
+            filterByDepAirport = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+        }
+        ExecuteFilter();
+    }
+    private void FilterByDate(ChangeEventArgs changeEventArgs)
+    {
+        filterByDepAirport = null;
+        try
+        {
+            filterByDepAirport = changeEventArgs.Value.ToString();
+        }
+        catch (Exception e)
+        {
+        }
+        ExecuteFilter();
+    }
+
+
+
+    private void ExecuteFilter()
+    {
+        if (filterByDepAirport != null)
+            flightsToShow = flightsToShow.Where(flight => flight.departureAirport.nameAirport.Contains(filterByDepAirport)).ToList();
+        if (filterByDepCountry!=null)
+            flightsToShow = flightsToShow.Where(flight => flight.departureCountry.Contains(filterByDepCountry)).ToList();
+        if(filterByDesAirport!=null)
+            flightsToShow = flightsToShow.Where(flight => flight.destinationAirport.nameAirport.Contains(filterByDesAirport)).ToList();
+        if(filterByDate!=null)
+            flightsToShow= flightsToShow.Where(flight => flight.dateTime.ToShortDateString().Contains(filterByDate)).ToList();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine(_userService.getAllFlights().Count);
+        flightsToShow = _userService.getAllFlights().Where(flight => flight.dateTime.CompareTo(new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)) < 2).ToList();
+        
+    }
+
+    private void MakeBooking(Flight flight)
+    {
+        _userService.selectFlight(flight);
+        _navigationManager.NavigateTo("MakeBooking");
+    }
+}

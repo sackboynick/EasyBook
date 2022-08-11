@@ -1,0 +1,109 @@
+﻿@page "/"
+@using Model
+@using EasyBook_Client.Data
+@inject NavigationManager _navigationManager;
+@inject IClientMethods _userService
+@inject AuthenticationStateProvider _authenticationStateProvider
+
+<PageTitle>Index</PageTitle>
+
+<h1>WELCOME TO EASYBOOK</h1>
+
+
+<div class="card">
+    <h4 class="card-header">Register</h4>
+    <div class="card-body">
+        <EditForm Model="@_user" OnValidSubmit="OnValidRegister">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Email</label>
+                <InputText @bind-Value="_user.email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>First name</label>
+                <InputText @bind-Value="_user.name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Last name</label>
+                <InputText @bind-Value="_user.surname" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <InputText @bind-Value="_user.phone" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Gender</label>
+                <InputSelect class="form-control" @bind-Value="_user.sex">
+                    <option value="M">M</option>
+                    <option value="F">F</option>
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="_user.password" class="form-control" />
+            </div>
+
+            <p class="actions">
+                <button class="btn btn-outline-dark" type="submit">Register</button>
+            </p>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <h3>--or--</h3>
+</div>
+
+<div class="card">
+    <h4 class="card-header">LogIn</h4>
+    <div class="card-body">
+        <EditForm Model="@_user" OnValidSubmit="OnValidLogIn">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Email</label>
+                <InputText @bind-Value="_user.email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="_user.password" class="form-control" />
+            </div>
+
+            <p class="actions">
+                <button class="btn btn-outline-dark" type="submit">Log In</button>
+            </p>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+
+    private User _user;
+
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _user = new User();
+    }
+
+    private void OnValidRegister()
+    {
+        _userService.registerUser(_user);
+        _navigationManager.NavigateTo("Bookings");
+    }
+
+    private void OnValidLogIn()
+    {
+        _userService.logIn(_user.email, _user.password);
+        _navigationManager.NavigateTo("Bookings");
+        try
+        {
+            ((CustomAuthenticationStateProvider) _authenticationStateProvider).ValidateLogin(_user.email, _user.password);
+        }
+        catch (Exception e)
+        {
+            
+        }
+    }
+}
