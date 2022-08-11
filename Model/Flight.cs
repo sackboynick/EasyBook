@@ -6,6 +6,7 @@ public class Flight
         Airport destinationAirport, string destinationCountry, string destinationContinent, DateTime dateTime,
         double length, int totalSeats, int totalBookedSeats, double price, double priceForLuggage, string status)
     {
+        this.idFlight = 0;
         this.flightNO = flightNO;
         this.departureAirport = departureAirport;
         this.departureCountry = departureCountry;

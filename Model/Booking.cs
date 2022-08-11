@@ -4,6 +4,7 @@ public class Booking
 {
     public Booking(Flight flight,User user,int luggage,Company company, string firstName,string lastName,string passportId,string status)
     {
+        this.idBooking = 0;
         this.flight = flight;
         this.user = user;
         this.luggage = luggage;

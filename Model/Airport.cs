@@ -4,6 +4,7 @@ public class Airport
 {
     public Airport(string nameAirport)
     {
+        this.idAirport = 0;
         this.nameAirport = nameAirport;
     }
     public Airport()
