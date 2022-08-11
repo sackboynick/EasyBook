@@ -270,9 +270,31 @@ public class DatabaseDataRetriever : IDatabaseRetriever
         return companies;
     }
 
-    public Task<User> getUser(string email, string password)
+    public async Task<User> getUser(string email, string password)
     {
-        throw new NotImplementedException();
+        HttpClientHandler clientHandler = new HttpClientHandler();
+        clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+        using HttpClient client = new HttpClient(clientHandler);
+            
+            
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+        client.DefaultRequestHeaders.Add("User-Agent",".NET Foundation Repository Reporter");
+            
+            
+        HttpResponseMessage response = await client.GetAsync("http://localhost:8080/CheckUser?Email="+email+"&Password="+password).ConfigureAwait(false);
+        if(!response.IsSuccessStatusCode)
+            throw new Exception(@"Error: {responseMessage.StatusCode}, {responseMessage.ReasonPhrase}");
+            
+        string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        User user = JsonSerializer.Deserialize<User>(result, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
+        return user;
     }
 
     public async Task createUser(User user)
