@@ -29,7 +29,7 @@ public class DatabaseDataRetriever : IDatabaseRetriever
         Flight flight = JsonSerializer.Deserialize<Flight>(result, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        }) ?? throw new InvalidOperationException();
 
         return flight;
     }

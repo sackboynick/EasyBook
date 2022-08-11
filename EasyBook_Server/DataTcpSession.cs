@@ -36,58 +36,16 @@ public class DataTcpSession:TcpSession
 
             if (message.StartsWith("F"))
             {
-                //List<Flight> flights = _dataRetriever.getAllFlights().Result;
-                List<Flight> flights = new List<Flight>();
-                flights.Add(new Flight(12434, new Airport("VCE"), "ITA", "EUR", new Airport("PHY"),
-                    "ENG", "EUR", new DateTime(2022, 08, 15, 13, 50, 0), 3, 100, 34, 112.5, 30, "OnTime"));
+                List<Flight> flights = _dataRetriever.getAllFlights().Result;
                 SendAsync("F"+JsonSerializer.Serialize(flights));
-                /*
-                switch (message.Substring(1,3))
-                {
-                    case "DEP":
-                        flights = flights.Where(flight =>
-                            flight.departureAirport.nameAirport.Equals(message.Substring(4, 3))).ToList();
-                        if (message.Substring(7, 3).Equals("DES"))
-                        {
-                            flights=flights.Where(flight =>
-                                flight.destinationAirport.nameAirport.Equals(message.Substring(10, 3))).ToList();
-                        }
-                        if (message.Substring(7, 3).Equals("DAT"))
-                        {
-                            flights=flights.Where(flight =>
-                                flight.dateTime.ToShortDateString().Equals(message.Substring(10, message.Length-10))).ToList();
-                        }
-                        if (message.Substring(13, 3).Equals("DAT"))
-                        {
-                            flights=flights.Where(flight =>
-                                flight.destinationAirport.nameAirport.Equals(message.Substring(16, message.Length-16))).ToList();
-                        }
-
-                        
-                        break;
-                    case "CDP":
-                        flights = flights.Where(flight =>
-                            flight.departureCountry.Equals(message.Substring(4, 3))).ToList();
-                        if (message.Substring(7, 3).Equals("DAT"))
-                        {
-                            flights=flights.Where(flight =>
-                                flight.dateTime.ToString().Equals(message.Substring(10, message.Length-10))).ToList();
-                        }
-                        break;
-                }
-                SendAsync(JsonSerializer.Serialize(flights));*/
             }
             else if (message.StartsWith("U"))
             {
                 string email = "";
                 int indexOfDivisor = message.IndexOf(":");
                 email = message.Substring(1, indexOfDivisor - 2);
-                Console.WriteLine(email);
                 string password = message.Substring(indexOfDivisor + 1);
-                Console.WriteLine(password);
-                //SendAsync(JsonSerializer.Serialize(_dataRetriever.getUser(email, password)));
-                User fakeUser = new User("Nicola","Santolini",'M',"42586","nicola@live.com","password");
-                SendAsync("U"+JsonSerializer.Serialize(fakeUser));
+                SendAsync(JsonSerializer.Serialize(_dataRetriever.getUser(email, password)));
             }
             else if (message.StartsWith("B"))
             {
