@@ -54,6 +54,7 @@ public class ServerDataRetriever:TcpClient,IClientMethods
     protected override void OnReceived(byte[] buffer, long offset, long size)
         {
             string message= Encoding.UTF8.GetString(buffer, (int)offset, (int)size);
+            Console.WriteLine(message);
             if (message.StartsWith("F"))
                 flightsToDisplay = JsonSerializer.Deserialize<List<Flight>>(message.Substring(1));
             else if (message.StartsWith("B"))
@@ -151,8 +152,13 @@ public class ServerDataRetriever:TcpClient,IClientMethods
     {
         bookingsToDisplay = new List<Booking>();
         SendAsync("B" + email);
-        while (bookingsToDisplay.Count==0)
-            Thread.Sleep(10);
+        int i = 0;
+        while (bookingsToDisplay.Count==0 || i<6)
+        {
+            Thread.Sleep(1000);
+            i++;
+        }
+        
         return bookingsToDisplay;
     }
 

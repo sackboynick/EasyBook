@@ -179,18 +179,14 @@ public class DatabaseDataRetriever : IDatabaseRetriever
         client.DefaultRequestHeaders.Add("User-Agent",".NET Foundation Repository Reporter");
             
                 
-        HttpResponseMessage response = await client.DeleteAsync("http://localhost:8080/RemoveBooking?id="+bookingId).ConfigureAwait(false);
+        HttpResponseMessage response = await client.GetAsync("http://localhost:8080/RemoveBooking?id="+bookingId).ConfigureAwait(false);
         if(!response.IsSuccessStatusCode)
             throw new Exception(@"Error: {responseMessage.StatusCode}, {responseMessage.ReasonPhrase}");
     }
 
     public async Task<List<Booking>> getAllBookings()
     {
-        List<Booking> bookings = new List<Booking>();
-        bookings.Add(new Booking(new Flight(12434,new Airport("VCE"),"ITA","EUR",new Airport("PHY"),"ENG","EUR",new DateTime(2022,08,12,13,50,0),3,100,34,112.5,30,"OnTime"),new User("Nicola","Santolini",'M',"42586","nicola@live.com","password"),2,new Company("EasyJet"),"nicola","santolini","DB39363","Confirmed"));
-        return bookings;
-        /*
-         HttpClientHandler clientHandler = new HttpClientHandler();
+        HttpClientHandler clientHandler = new HttpClientHandler();
         clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
         using HttpClient client = new HttpClient(clientHandler);
@@ -206,14 +202,13 @@ public class DatabaseDataRetriever : IDatabaseRetriever
             throw new Exception(@"Error: {responseMessage.StatusCode}, {responseMessage.ReasonPhrase}");
             
         string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
+        Console.WriteLine(result);
         List<Booking> bookings = JsonSerializer.Deserialize<List<Booking>>(result, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
 
         return bookings;
-         */
     }
 
     public async Task<Company> getCompany(int companyId)
@@ -288,7 +283,6 @@ public class DatabaseDataRetriever : IDatabaseRetriever
             throw new Exception(@"Error: {responseMessage.StatusCode}, {responseMessage.ReasonPhrase}");
             
         string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
         User user = JsonSerializer.Deserialize<User>(result, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
@@ -316,6 +310,8 @@ public class DatabaseDataRetriever : IDatabaseRetriever
             "application/json"
         );
         HttpResponseMessage response = await client.PostAsync("http://localhost:8080/AddUser", content).ConfigureAwait(false);
+        Console.WriteLine(content.ToString());
+        Console.WriteLine(response.Content.ToString());
         if(!response.IsSuccessStatusCode)
             throw new Exception(@"Error: {responseMessage.StatusCode}, {responseMessage.ReasonPhrase}");
     }

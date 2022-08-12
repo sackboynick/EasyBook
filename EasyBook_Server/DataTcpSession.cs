@@ -43,14 +43,16 @@ public class DataTcpSession:TcpSession
             {
                 string email = "";
                 int indexOfDivisor = message.IndexOf(":");
-                email = message.Substring(1, indexOfDivisor - 2);
+                email = message.Substring(1, indexOfDivisor - 1);
                 string password = message.Substring(indexOfDivisor + 1);
-                SendAsync(JsonSerializer.Serialize(_dataRetriever.getUser(email, password)));
+                Console.WriteLine(email+" "+password);
+                SendAsync("U"+JsonSerializer.Serialize(_dataRetriever.getUser(email, password).Result));
             }
             else if (message.StartsWith("B"))
             {
+                Console.WriteLine(_dataRetriever.getAllBookings().Result.Count);
                 SendAsync("B"+JsonSerializer.Serialize(_dataRetriever.getAllBookings().Result
-                    .Where(booking => booking.user.email.Equals(message.Substring(1)))));
+                    .Where(booking => booking.user.email.Equals(message.Substring(1))).ToList()));
             }
             else if (message.Substring(0, 4).Equals("addB"))
             {

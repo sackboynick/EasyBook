@@ -3,7 +3,7 @@ namespace Model;
 public class Flight 
 {
     public Flight(int flightNO, Airport departureAirport, string departureCountry, string departureContinent,
-        Airport destinationAirport, string destinationCountry, string destinationContinent, DateTime dateTime,
+        Airport destinationAirport, string destinationCountry, string destinationContinent,Company company, DateTime dateTime,
         double length, int totalSeats, int totalBookedSeats, double price, double priceForLuggage, string status)
     {
         this.idFlight = 0;
@@ -14,6 +14,7 @@ public class Flight
         this.destinationAirport = destinationAirport;
         this.destinationCountry = destinationCountry;
         this.destinationContinent = destinationContinent;
+        this.company = company;
         this.dateTime = dateTime;
         this.length = length;
         this.totalSeats = totalSeats;
@@ -35,6 +36,7 @@ public class Flight
     public Airport destinationAirport { get; set; }
     public string destinationCountry { get; set; }
     public string destinationContinent { get; set; }
+    public Company company { get; set; }
     public DateTime dateTime{ get; set; }
     public double length { get; set; }
     public int totalSeats { get; set; }

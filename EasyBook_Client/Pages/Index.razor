@@ -90,12 +90,13 @@
     private void OnValidRegister()
     {
         _userService.registerUser(_user);
-        _navigationManager.NavigateTo("Bookings");
+        _navigationManager.NavigateTo("/");
     }
 
     private void OnValidLogIn()
     {
         _userService.logIn(_user.email, _user.password);
+        Thread.Sleep(2500);
         _navigationManager.NavigateTo("Bookings");
         try
         {

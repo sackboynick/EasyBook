@@ -88,7 +88,7 @@ else
                 <td>@item.flight.dateTime.Date.ToShortDateString()</td>
                 <td>@item.flight.dateTime.ToShortTimeString()</td>
                 <td>@item.luggage</td>
-                <td>@item.finalPrice()</td>
+                <td>@item.finalPrice</td>
                 <td>@item.firstName</td>
                 <td>@item.lastName</td>
                 <td>@item.passportId</td>
@@ -134,6 +134,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        Thread.Sleep(1200);
         allBookings = _userService.getBookings(_userService.getCurrentUser().email);
             Console.WriteLine(allBookings.First().lastName);
             pastBookings = allBookings.Where(booking => booking.flight.dateTime.CompareTo(new DateTime(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day))>0).ToList();
